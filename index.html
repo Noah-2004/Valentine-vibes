@@ -210,7 +210,7 @@ function stopBackgroundEffects() {
 function choose(status){
     choice = status;
     const bgMusic = document.getElementById('bgMusic');
-    bgMusic.volume = 0.1;
+    bgMusic.volume = 0.5;
     if(bgMusic.paused) bgMusic.play();
     showScreen(2,'popScale');
 }
@@ -239,9 +239,8 @@ function showScreen4Confession(name){
     let msgBox=document.getElementById("confessionMsg");
     let msgs=[
         "1.  😏 Are you a magician? Because whenever I look at you, everyone else disappears.",
-        " 2.  🍫 You’re sweeter than chocolate… and way less fattening.",
-        "3.  😂 If kisses were Wi-Fi, I’d send you unlimited data. ❤️", 
-        "4.  😘 Be my Valentine, or I’ll unleash my terrible dance moves."
+        "2.  😂 If kisses were Wi-Fi, I’d send you unlimited data. ❤️", 
+        "3.  😘 Be my Valentine, or I’ll unleash my terrible dance moves."
     ];
     let i=0;
     function nextMsg(){
