@@ -130,9 +130,14 @@ input{
 </div>
 
 <div class="screen shake" id="screen5">
-<h3>❌❗HMM NETWORK MULFUNCTION❗❌</h3>
-<h3>Click Next To Move On</h3>
-<button onclick="askNames()">Next</button>
+<h3>❌❗HMM NETWORK MALFUNCTION❗❌</h3>
+<h3>Enter your details to continue</h3>
+
+<input type="text" id="personNameInput" placeholder="Your name" style="margin-bottom:10px;">
+
+<input type="text" id="partnerNameInput" placeholder="Partner's name" style="margin-bottom:10px; display:none;">
+
+<button id="screen5NextBtn">Next</button>
 </div>
 
 <div class="screen zoomOut" id="screen6">
@@ -187,8 +192,7 @@ function sendMessage(){
     let interval=setInterval(()=>{
         if(width>=100){
             clearInterval(interval);
-            showScreen(4,'slideBottom');
-            startConfession(name);
+            showScreen4Confession(name);
         }else{
             width++;
             bar.style.width=width+"%";
@@ -197,13 +201,14 @@ function sendMessage(){
 }
 
 // Screen 4 -> confession
-function startConfession(name){
+function showScreen4Confession(name){
+    showScreen(4,'slideBottom');
     let msgBox=document.getElementById("confessionMsg");
     let msgs=[
         "I've been meaning to tell you something..",
         name +", you are special in the world",
-       "You are amazing to me my dear",
-       "You deserve love all the love❤️"
+        "You are amazing to me my dear",
+        "You deserve all the love ❤️"
     ];
     let i=0;
     function nextMsg(){
@@ -214,20 +219,33 @@ function startConfession(name){
             setTimeout(nextMsg,3000);
         }else{
             for(let j=0;j<6;j++) setTimeout(()=>createEffect('rose'),j*400);
-            setTimeout(()=>showScreen(5,'shake'),2500);
+            setTimeout(()=>showScreen5(),2500);
         }
     }
     nextMsg();
 }
 
-// Screen5 -> ask for names
-function askNames(){
-    personName = prompt("Enter your name:");
-    if(choice === 'taken'){
-        partnerName = prompt("Enter your partner's name:");
+// Screen5 with input fields
+function showScreen5() {
+    showScreen(5,'shake');
+
+    const personInput = document.getElementById('personNameInput');
+    const partnerInput = document.getElementById('partnerNameInput');
+    const nextBtn = document.getElementById('screen5NextBtn');
+
+    // Reset fields
+    personInput.value = '';
+    partnerInput.value = '';
+    partnerInput.style.display = (choice === 'taken') ? 'block' : 'none';
+
+    nextBtn.onclick = function(){
+        personName = personInput.value || "Someone";
+        if(choice === 'taken'){
+            partnerName = partnerInput.value || "Your Partner";
+        }
+        showScreen(6,'zoomOut');
+        displayFinalMsg();
     }
-    showScreen(6,'zoomOut');
-    displayFinalMsg();
 }
 
 // Screen6 final message
