@@ -97,6 +97,20 @@ input{
 .welcome-message{
     color: lightgreen;
 }
+
+.secret{
+    padding: 15px 10px 15px 10px;
+    background: lightgray;
+    color: green;
+    border-radius: 5px;
+    border: dotted 5px;
+}
+#confessionMsg{
+    padding: 5px 5px 5px 5px;
+    background: gray;
+    font-size: 15px;
+}
+
 </style>
 </head>
 <body>
@@ -114,7 +128,7 @@ input{
 </div>
 
 <div class="screen popScale" id="screen2">
-<h1>🎤 Send a love message</h1>
+<h1 class="secret">🎤 Send a love message</h1>
 <input id="crushInput" placeholder="Enter crush name">
 <button onclick="sendMessage()">Next</button>
 </div>
@@ -125,42 +139,50 @@ input{
 </div>
 
 <div class="screen slideBottom" id="screen4">
-<h1>💌 SENDING SECRET CONFESSION TO YOUR CRUSH💘</h1>
-<h1>👇👇👇👇👇👇👇👇👇👇</h1>
+<h1 class="secret">💌 Secret Confession</h1>
+
+<h3>I've Been Meaning To Tell You Something..👇</h3>
 <div id="confessionMsg"></div>
 </div>
 
 <div class="screen shake" id="screen5">
-<h3>❌❗HMM NETWORK MALFUNCTION❗❌</h3>
+<h3 class="secret">❌❗HMMMMMMMM 🤔🤔🤔🤔❌❗ ❌❗ NETWORK MALFUNCTION❗❌</h3>
 <h3>Enter your details to continue</h3>
+<h3>Feel Free It's Just For Fun</h3>
 
 <input type="text" id="personNameInput" placeholder="Your name" style="margin-bottom:10px;">
-
 <input type="text" id="partnerNameInput" placeholder="Partner's name" style="margin-bottom:10px; display:none;">
-
 <button id="screen5NextBtn">Next</button>
 </div>
 
 <div class="screen zoomOut" id="screen6">
-<h1>🎉 Happy Valentine!🎉</h1>
+<h1 class="secret">🎉 Happy Valentine!🎉</h1>
 <p id="finalMsg"></p>
 </div>
 
+<div class="screen fadeIn" id="screen7">
+<h1 class="secret">🎉 Thank You! 🎉</h1>
+<p style="max-width:80%; text-align:center; font-size:18px;">
+Thank you for your participation! Wishing you love, happiness, and wonderful moments every day. ❤️✨
+</p>
+<button onclick="returnHome()">Done – Return Home</button>
+</div>
+
 <script>
-let choice = ''; // single or taken
+let choice = '';
 let personName = '';
 let partnerName = '';
+let effectInterval;
 
-// show screen with animation
+// Show screen
 function showScreen(n, animClass){
-    for(let i=1;i<=6;i++){
+    for(let i=1;i<=7;i++){
         document.getElementById("screen"+i).classList.remove("show","slideUp","popScale","fadeIn","slideBottom","zoomOut","shake");
     }
-    let s=document.getElementById("screen"+n);
-    s.classList.add("show", animClass);
+    document.getElementById("screen"+n).classList.add("show", animClass);
 }
 
-// Confetti / Roses
+// Confetti/Roses
 function createEffect(type){
     let e=document.createElement("div");
     e.classList.add(type);
@@ -171,19 +193,29 @@ function createEffect(type){
     setTimeout(()=>e.remove(),7000);
 }
 
-// Screen 1
+// Start continuous background effects
+function startBackgroundEffects() {
+    if(effectInterval) clearInterval(effectInterval);
+    effectInterval = setInterval(() => {
+        createEffect(Math.random() < 0.5 ? 'rose' : 'confetti');
+    }, 700);
+}
+
+// Stop background effects
+function stopBackgroundEffects() {
+    if(effectInterval) clearInterval(effectInterval);
+}
+
+// Screen 1 choice
 function choose(status){
     choice = status;
-
-    // Play background music after user click
     const bgMusic = document.getElementById('bgMusic');
-    bgMusic.volume = 0.5; // minimal volume
+    bgMusic.volume = 0.1;
     if(bgMusic.paused) bgMusic.play();
-
     showScreen(2,'popScale');
 }
 
-// Screen 2 -> 3
+// Screen2 -> 3
 function sendMessage(){
     let name=document.getElementById("crushInput").value||"Someone special";
     showScreen(3,'fadeIn');
@@ -201,22 +233,20 @@ function sendMessage(){
     },30);
 }
 
-// Screen 4 -> confession
+// Screen4 -> confession
 function showScreen4Confession(name){
     showScreen(4,'slideBottom');
     let msgBox=document.getElementById("confessionMsg");
     let msgs=[
-        "I HAVE BEENMEANINGTOTELLYOUSOMETHING....",
-        name +", 😏 Are you a magician? Because whenever I look at you, everyone else disappears.",
-        "🍫 You’re sweeter than chocolate… and way less fattening.",
-        "🐻 I love you more than my snacks… and that’s saying a lot.",
-        "😂 If kisses were Wi-Fi, I’d send you unlimited data.",
-        "😘 Be my Valentine, or I’ll unleash my terrible dance moves."
+        "1.  😏 Are you a magician? Because whenever I look at you, everyone else disappears.",
+        " 2.  🍫 You’re sweeter than chocolate… and way less fattening.",
+        "3.  😂 If kisses were Wi-Fi, I’d send you unlimited data. ❤️", 
+        "4.  😘 Be my Valentine, or I’ll unleash my terrible dance moves."
     ];
     let i=0;
     function nextMsg(){
         if(i<msgs.length){
-            msgBox.innerHTML=msgs[i];
+            msgBox.innerHTML=`<h2 style="text-align:center; font-size:2em; margin:0;">${msgs[i]}</h2>`;
             msgBox.classList.add('showMessage');
             i++;
             setTimeout(nextMsg,5000);
@@ -228,24 +258,18 @@ function showScreen4Confession(name){
     nextMsg();
 }
 
-// Screen5 with input fields
+// Screen5 input
 function showScreen5() {
     showScreen(5,'shake');
-
     const personInput = document.getElementById('personNameInput');
     const partnerInput = document.getElementById('partnerNameInput');
     const nextBtn = document.getElementById('screen5NextBtn');
-
-    // Reset fields
     personInput.value = '';
     partnerInput.value = '';
     partnerInput.style.display = (choice === 'taken') ? 'block' : 'none';
-
     nextBtn.onclick = function(){
         personName = personInput.value || "Someone";
-        if(choice === 'taken'){
-            partnerName = partnerInput.value || "Your Partner";
-        }
+        if(choice==='taken'){ partnerName = partnerInput.value || "Your Partner"; }
         showScreen(6,'zoomOut');
         displayFinalMsg();
     }
@@ -259,8 +283,21 @@ function displayFinalMsg(){
     }else{
         msg = `Happy Valentine’s Day to you, ${personName}! Chill with ${partnerName} but don't freeze🤣🤣. I wish you good luck so that next Valentine’s Day, you will chill with ${partnerName} again 😍 ❤️`;
     }
-    document.getElementById("finalMsg").innerHTML = msg;
+    document.getElementById("finalMsg").innerHTML = `<h3 style="text-align:center; font-size:1em; margin:0;">${msg}</h3>`;
+    setTimeout(()=>showScreen(7,'fadeIn'),5000);
 }
+
+// Return Home with effects
+function returnHome(){
+    choice = '';
+    personName = '';
+    partnerName = '';
+    showScreen(1,'slideUp');
+    startBackgroundEffects();
+}
+
+// Start effects on page load
+window.onload = () => { startBackgroundEffects(); };
 </script>
 </body>
 </html>
