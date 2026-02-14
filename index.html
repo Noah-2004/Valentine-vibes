@@ -125,7 +125,8 @@ input{
 </div>
 
 <div class="screen slideBottom" id="screen4">
-<h1>💌 Secret Confession</h1>
+<h1>💌 SENDING SECRET CONFESSION TO YOUR CRUSH💘</h1>
+<h1>👇👇👇👇👇👇👇👇👇👇</h1>
 <div id="confessionMsg"></div>
 </div>
 
@@ -205,7 +206,7 @@ function showScreen4Confession(name){
     showScreen(4,'slideBottom');
     let msgBox=document.getElementById("confessionMsg");
     let msgs=[
-        "I've been meaning to tell you something..",
+        "I HAVE BEENMEANINGTOTELLYOUSOMETHING....",
         name +", 😏 Are you a magician? Because whenever I look at you, everyone else disappears.",
         "🍫 You’re sweeter than chocolate… and way less fattening.",
         "🐻 I love you more than my snacks… and that’s saying a lot.",
@@ -218,7 +219,7 @@ function showScreen4Confession(name){
             msgBox.innerHTML=msgs[i];
             msgBox.classList.add('showMessage');
             i++;
-            setTimeout(nextMsg,3000);
+            setTimeout(nextMsg,5000);
         }else{
             for(let j=0;j<6;j++) setTimeout(()=>createEffect('rose'),j*400);
             setTimeout(()=>showScreen5(),2500);
