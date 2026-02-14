@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valentine Cinematic Chaos</title>
+<style>
+html, body{
+    height:100%;
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:linear-gradient(135deg,#1a001a,#330033);
+    color:white;
+    overflow:hidden;
+}
+
+.screen{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    z-index:0;
+    opacity:0;
+}
+
+.screen.show{
+    display:flex;
+    z-index:10;
+    opacity:1;
+    animation-duration:0.8s;
+    animation-fill-mode:forwards;
+}
+.slideUp{animation-name:slideUp;}
+@keyframes slideUp{from{opacity:0; transform:translateY(50px);} to{opacity:1; transform:translateY(0);}}
+.popScale{animation-name:popScale;}
+@keyframes popScale{from{opacity:0; transform:scale(0.5);} to{opacity:1; transform:scale(1);}}
+.fadeIn{animation-name:fadeIn;}
+@keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
+.slideBottom{animation-name:slideBottom;}
+@keyframes slideBottom{from{opacity:0; transform:translateY(50px);} to{opacity:1; transform:translateY(0);}}
+.zoomOut{animation-name:zoomOut;}
+@keyframes zoomOut{from{opacity:0; transform:scale(1.3);} to{opacity:1; transform:scale(1);}}
+.shake{animation:shake 0.5s ease;}
+@keyframes shake{0%{transform:translateX(0);}25%{transform:translateX(-6px);}50%{transform:translateX(6px);}75%{transform:translateX(-6px);}100%{transform:translateX(0);}}
+
+button{
+    padding:12px 18px;
+    margin:8px;
+    font-size:16px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#ff4da6;
+    color:white;
+    transition:0.3s;
+}
+button:hover{transform:scale(1.05);}
+input{
+    padding:8px;
+    border-radius:6px;
+    border:none;
+    margin-top:10px;
+}
+
+.rose,.confetti{
+    position:absolute;
+    top:-20px;
+    font-size:18px;
+    animation:fall linear forwards;
+}
+@keyframes fall{to{ transform:translateY(100vh); }}
+
+#loadingBox{
+    width:80%;
+    height:18px;
+    border:2px solid white;
+    margin:15px auto;
+}
+#loadingBar{height:100%; width:0%; background:#00ff99;}
+
+#message{
+    margin-top:20px;
+    font-size:20px;
+    min-height:50px;
+    opacity:0;
+    transform:translateY(20px);
+    transition:all 0.8s ease;
+}
+.showMessage{opacity:1 !important; transform:translateY(0px) !important;}
+.typing{ font-style:italic; opacity:0.7; }
+
+.welcome-message{
+    color: lightgreen;
+}
+</style>
+</head>
+<body>
+
+<!-- Background Music -->
+<audio id="bgMusic" src="music.mp3" loop></audio>
+
+<!-- Screens -->
+<div class="screen show slideUp" id="screen1">
+<h1 class="welcome-message">🎉THIS IS A VALENTINE MOMENT FROM NOAH TO YOU🎉</h1> 
+<h3>🎉Follow The move to make your day excited🎉</h3>   
+<h1>💘 Choose your status</h1>
+<button onclick="choose('single')">Single 💔</button>
+<button onclick="choose('taken')">Taken ❤️</button>
+</div>
+
+<div class="screen popScale" id="screen2">
+<h1>🎤 Send a love message</h1>
+<input id="crushInput" placeholder="Enter crush name">
+<button onclick="sendMessage()">Next</button>
+</div>
+
+<div class="screen fadeIn" id="screen3">
+<h1>💍 Secret Proposal</h1>
+<div id="loadingBox"><div id="loadingBar"></div></div>
+</div>
+
+<div class="screen slideBottom" id="screen4">
+<h1>💌 Secret Confession</h1>
+<div id="confessionMsg"></div>
+</div>
+
+<div class="screen shake" id="screen5">
+<h3>❌❗HMM NETWORK MULFUNCTION❗❌</h3>
+<h3>Click Next To Move On</h3>
+<button onclick="askNames()">Next</button>
+</div>
+
+<div class="screen zoomOut" id="screen6">
+<h1>🎉 Happy Valentine!🎉</h1>
+<p id="finalMsg"></p>
+</div>
+
+<script>
+let choice = ''; // single or taken
+let personName = '';
+let partnerName = '';
+
+// show screen with animation
+function showScreen(n, animClass){
+    for(let i=1;i<=6;i++){
+        document.getElementById("screen"+i).classList.remove("show","slideUp","popScale","fadeIn","slideBottom","zoomOut","shake");
+    }
+    let s=document.getElementById("screen"+n);
+    s.classList.add("show", animClass);
+}
+
+// Confetti / Roses
+function createEffect(type){
+    let e=document.createElement("div");
+    e.classList.add(type);
+    e.innerHTML=type==='rose'?'🌹':'🎉';
+    e.style.left=Math.random()*100+"vw";
+    e.style.animationDuration=(Math.random()*4+3)+"s";
+    document.body.appendChild(e);
+    setTimeout(()=>e.remove(),7000);
+}
+
+// Screen 1
+function choose(status){
+    choice = status;
+
+    // Play background music after user click
+    const bgMusic = document.getElementById('bgMusic');
+    bgMusic.volume = 0.1; // minimal volume
+    if(bgMusic.paused) bgMusic.play();
+
+    showScreen(2,'popScale');
+}
+
+// Screen 2 -> 3
+function sendMessage(){
+    let name=document.getElementById("crushInput").value||"Someone special";
+    showScreen(3,'fadeIn');
+    let bar=document.getElementById("loadingBar");
+    bar.style.width="0%";
+    let width=0;
+    let interval=setInterval(()=>{
+        if(width>=100){
+            clearInterval(interval);
+            showScreen(4,'slideBottom');
+            startConfession(name);
+        }else{
+            width++;
+            bar.style.width=width+"%";
+        }
+    },30);
+}
+
+// Screen 4 -> confession
+function startConfession(name){
+    let msgBox=document.getElementById("confessionMsg");
+    let msgs=[
+        "I've been meaning to tell you something..",
+        name +", you are special in the world",
+       "You are amazing to me my dear",
+       "You deserve love all the love❤️"
+    ];
+    let i=0;
+    function nextMsg(){
+        if(i<msgs.length){
+            msgBox.innerHTML=msgs[i];
+            msgBox.classList.add('showMessage');
+            i++;
+            setTimeout(nextMsg,3000);
+        }else{
+            for(let j=0;j<6;j++) setTimeout(()=>createEffect('rose'),j*400);
+            setTimeout(()=>showScreen(5,'shake'),2500);
+        }
+    }
+    nextMsg();
+}
+
+// Screen5 -> ask for names
+function askNames(){
+    personName = prompt("Enter your name:");
+    if(choice === 'taken'){
+        partnerName = prompt("Enter your partner's name:");
+    }
+    showScreen(6,'zoomOut');
+    displayFinalMsg();
+}
+
+// Screen6 final message
+function displayFinalMsg(){
+    let msg = '';
+    if(choice==='single'){
+        msg = `Happy Valentine’s Day to you, ${personName}! Chill alone but don't freeze🤣🤣. I wish you good luck so that next Valentine’s Day, you will chill with your crush 😍 ❤️`;
+    }else{
+        msg = `Happy Valentine’s Day to you, ${personName}! Chill with ${partnerName} but don't freeze🤣🤣. I wish you good luck so that next Valentine’s Day, you will chill with ${partnerName} again 😍 ❤️`;
+    }
+    document.getElementById("finalMsg").innerHTML = msg;
+}
+</script>
+</body>
+</html>
